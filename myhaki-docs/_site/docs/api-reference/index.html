@@ -1,0 +1,187 @@
+<h1>MyHaki API Reference</h1>
+<p>Welcome to the <strong>MyHaki API Reference</strong>! Here you’ll find everything needed to integrate, test, and explore the REST endpoints powering MyHaki’s AI-driven legal aid system.</p>
+<hr>
+<h2><span style="font-weight: 600; color: #A87352;">Database Schema</span></h2>
+<p>Designed for maintainability, access control, and performance using PostgreSQL</p>
+<ul>
+<li>Core tables: users, lawyers, detainees, cases, assignments, CPD points, vector embeddings (pgvector)</li>
+</ul>
+<p><img src="images/erd.png" alt="Database Schema"></p>
+<hr>
+<h2><span style="font-weight: 300; font-size: 1.3em; color: #683929; font-family:'Poppins',sans-serif;">Live API Docs</span></h2>
+<ul>
+<li><strong>Swagger UI:</strong> <a href="https://myhaki-3e53581dd62e.herokuapp.com/swagger/">View Swagger Documentation</a></li>
+</ul>
+<h2><span style="font-weight: 300; font-size: 1.2em; color: #621616;">Main Endpoints</span></h2>
+<p>All endpoints are RESTful, return JSON, and require token authentication unless noted.</p>
+<h3><span style="font-weight: 300; color: #00000;">Authentication &amp; User Management</span></h3>
+<div class="api-block">
+<pre class="api-dark">
+POST   /register-lawyer/           # Lawyer signup (sets verified)
+POST   /signup/                    # Applicant signup
+POST   /login/                     # Login, returns authentication token
+POST   /logout/                    # Logout (invalidate token)
+</pre>
+</div>
+<h3><span style="font-weight: 300; color: #00000;">Password Management</span></h3>
+<div class="api-block">
+<pre class="api-dark">
+POST   /forgotpassword/           # Initiate password reset (OTP email)
+POST   /verifycode/               # Verify OTP code
+POST   /resetpassword/            # Set new password (after OTP)
+</pre>
+</div>
+<h3><span style="font-weight: 300; color: #00000;">Case &amp; Detainee Management</span></h3>
+<div class="api-block">
+<pre class="api-dark">
+POST   /cases/                    # Submit a new case (triggers AI pipeline)
+GET    /cases/                    # List/search cases (admin, lawyer)
+GET    /cases/{case_id}/          # Get case details
+GET    /case-assignments/my-cases/    # See assigned cases (lawyer)
+POST   /case-assignments/         # Assign case to lawyer (AI)
+</pre>
+</div>
+<h3><span style="font-weight: 300; color: #00000;">Lawyer &amp; CPD Management</span></h3>
+<div class="api-block">
+<pre class="api-dark">
+GET    /lawyers/                  # List all lawyers (admin)
+GET    /lawyers/{lawyer_id}/      # View lawyer profile
+GET    /cpd-points/               # Lawyer’s CPD history
+GET    /cpd-points/{lawyer_id}/   # CPD details for lawyer (admin)
+</pre>
+</div>
+<h3><span style="font-weight: 300; color: #00000;">AI &amp; Integration Endpoints</span></h3>
+<div class="api-block">
+<pre class="api-dark">
+POST   /ai/classify-case/         # Classify case type + urgency (internal, triggers on /cases/)
+POST   /ai/embed-case/            # Store case vector embedding (pgvector, internal)
+POST   /ai/translate/             # Translate case description (Kiswahili <-> English)
+</pre>
+</div>
+<h3><span style="font-weight: 300; color: #00000;">Admin &amp; Analytics</span></h3>
+<div class="api-block">
+<pre class="api-dark">
+GET    /admin/dashboard/          # Real-time analytics (cases/month, resolution time)
+GET    /audit-logs/               # View all user actions (admin only)
+GET    /users/                    # List all users (admin, RBAC)
+</pre>
+</div>
+<h2><span style="font-weight: 300; font-size: 1.2em; color: #621616;">Example API Usage</span></h2>
+<h3><span style="font-weight: 300; color: #00000;">Lawyer Registration</span></h3>
+<div class="api-block">
+<pre class="api-dark">
+POST /register-lawyer/
+{
+  "email": "loice@example.com",
+  "password": "2345!!pass",
+  "practice_number": "LSK/2025/12345",
+  "first_name": "Loice",
+  "last_name": "Nekesa"
+}
+</pre>
+</div>
+<h3><span style="font-weight: 300; color: #00000;">Case Submission (with AI)</span></h3>
+<div class="api-block">
+<pre class="api-dark">
+POST /cases/
+{
+  "detainee_id": 102,
+  "case_description": "Nilishikwa na polisi kwa tuhuma za wizi...",
+  "trial_date": "2025-10-15",
+  "location": "Kisumu Police Station"
+}
+</pre>
+</div>
+<h3><span style="font-weight: 300; color: #00000;">Password Reset</span></h3>
+<div class="api-block">
+<pre class="api-dark">
+POST /forgotpassword/
+{
+  "email": "user@example.com"
+}
+</pre>
+</div>
+<hr>
+<h2><span style="font-weight: 300; font-size: 1.2em; color: #621616;">API Testing &amp; Documentation</span></h2>
+<ul>
+<li><strong>All endpoints are documented in <a href="https://myhaki-3e53581dd62e.herokuapp.com/swagger/">Swagger UI</a>.</strong></li>
+<li>Use Postman to test flows (import OpenAPI spec).</li>
+<li>Screenshots above show real UI and dashboard flows.</li>
+</ul>
+<hr>
+<h2><span style="font-weight: 300; font-size: 1.2em; color: #621616;">Security &amp; Authentication</span></h2>
+<ul>
+<li>All endpoints require token authentication (see <code>/login/</code> for authentication token).</li>
+<li>To authenticate requests, include the token in the HTTP header:</li>
+</ul>
+<p>Authorization: Token {your_token_here}</p>
+<ul>
+<li>Store API keys and secrets in environment variables (<code>.env</code>). <strong>Never</strong> commit secrets to your repository.</li>
+<li>Role-Based Access Control restricts endpoint access by user type.</li>
+<li>All sensitive data (tokens, passwords) are encrypted at rest.</li>
+</ul>
+<hr>
+<h2><span style="font-weight: 300; font-size: 1.2em; color: #621616;">Error Handling &amp; Status Codes</span></h2>
+<ul>
+<li><strong>200 OK:</strong> Success</li>
+<li><strong>201 Created:</strong> Resource successfully created</li>
+<li><strong>400 Bad Request:</strong> Invalid input</li>
+<li><strong>401 Unauthorized:</strong> Invalid or missing authentication token</li>
+<li><strong>403 Forbidden:</strong> Insufficient permissions (RBAC)</li>
+<li><strong>404 Not Found:</strong> Resource does not exist</li>
+<li><strong>500 Internal Server Error:</strong> Unexpected backend error</li>
+</ul>
+<hr>
+<h2><span style="font-weight: 300; font-size: 1.2em; color: #621616;">API Versioning &amp; Roadmap</span></h2>
+<ul>
+<li>Current Version: <code>v1</code></li>
+<li>Upcoming: <code>/v2/</code> will include expanded endpoints for court integration, offline/USSD support, and enhanced analytics.</li>
+</ul>
+<hr>
+<h2><span style="font-weight: 300; font-size: 1.2em; color: #621616;">More Information</span></h2>
+<ul>
+<li>For a full list of endpoints and model schemas, see <a href="developer-docs.md">Developer Docs</a>.</li>
+<li>For platform architecture, AI, and integrations, see <a href="developer-docs.md">Developer Docs</a> and <a href="integrations.md">Integrations</a>.</li>
+<li>For brand assets and guidelines, contact the design team or see <a href="images/brand-guideline.png">Brand Guideline Screenshot</a>.</li>
+</ul>
+<hr>
+<h1>Deployment Process</h1>
+<hr>
+<h2>Backend Deployment (Django REST API)</h2>
+<ul>
+<li><strong>Naming:</strong>
+<ul>
+<li>snake_case for variables, functions, files</li>
+<li>PascalCase for classes and models</li>
+</ul>
+</li>
+<li><strong>Structure:</strong> Place serializers/views in separate files unless tightly coupled.</li>
+<li><strong>Testing:</strong> Use Django’s built-in test runner (<code>python manage.py test</code>), aim for &gt;90% coverage.</li>
+<li><strong>API:</strong> Follow REST conventions, use OpenAPI schema.</li>
+<li><strong>Security:</strong> Validate all input, use Django’s CSRF and authentication mechanisms.</li>
+<li><strong>Platform:</strong> Heroku (Staging &amp; Production)</li>
+<li><strong>Branch:</strong> Deploy from <code>main</code></li>
+<li><strong>Environment Variables:</strong> Managed securely in Heroku dashboard; never commit secrets</li>
+<li><strong>Scaling:</strong> Automatic scaling via Heroku dynos based on demand</li>
+<li><strong>Rollback:</strong> Previous stable releases can be redeployed via Heroku dashboard</li>
+</ul>
+<p><strong>Steps</strong></p>
+<ul>
+<li>Development and code changes happen on feature branches.</li>
+<li>GitHub Actions run automated tests and linting upon each push.</li>
+<li>Merging into the <code>main</code> branch triggers a Heroku deployment.</li>
+<li>Heroku pulls the latest code and deploys it to the staging or production environment.</li>
+<li>Environment variables and secrets are securely managed within the Heroku dashboard, never committed to code.</li>
+<li>Heroku Dynos scale automatically based on live traffic demands.</li>
+<li>In the event of deployment issues, rollback to previous stable releases is possible directly from the Heroku dashboard.</li>
+</ul>
+<hr>
+<h2><span style="font-weight:600; color:#A87352;">References &amp; Further Reading</span></h2>
+<ul>
+<li><a href="https://www.translateplus.com/">TranslatePlus API Docs</a></li>
+<li><a href="https://locationiq.com/docs">LocationIQ API</a></li>
+<li><a href="https://ai.google.dev/gemini">Gemini (Google AI) Docs</a></li>
+<li><a href="https://docs.celeryproject.org/en/stable/">Celery &amp; Redis Docs</a></li>
+<li><a href="https://github.com/pgvector/pgvector">pgvector for PostgreSQL</a></li>
+<li><a href="api-reference.md">MyHaki API Reference</a></li>
+</ul>

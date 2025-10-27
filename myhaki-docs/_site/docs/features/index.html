@@ -1,0 +1,88 @@
+<h1>Platform Features</h1>
+<p>Explore the core features of <strong>MyHaki</strong>, designed to streamline access to legal aid for pretrial detainees, empower lawyers, and enable the Law Society of Kenya (LSK) to monitor and coordinate justice delivery.</p>
+<hr>
+<h2><span style="font-weight: 600; color: #A87352;">1. Case Application &amp; Tracking (Android App)</span></h2>
+<ul>
+<li><span style="color: #232f3e;"><b>Accessible Case Submission:</b></span><br>
+Detainees and their families submit case applications via the Android app, entering personal details, case descriptions, and supporting documents.</li>
+<li><span style="color: #232f3e;"><b>Eligibility &amp; Verification:</b></span><br>
+The app guides users through basic eligibility checks and captures proof for legal aid.</li>
+<li><span style="color: #232f3e;"><b>Status Updates &amp; Notifications:</b></span><br>
+Users receive real-time notifications for every case event—verification, assignment, in-progress, and resolution.</li>
+<li><span style="color: #232f3e;"><b>Secure Messaging:</b></span><br>
+Communicate directly with assigned lawyers inside the app.</li>
+<li><span style="color: #232f3e;"><b>Low-End Device Support:</b></span><br>
+Optimized for informal settlements and low-income users.</li>
+</ul>
+<p><img src="images/case-submission.png" alt="Case Submission Screenshot"></p>
+<hr>
+<h2><span style="font-weight: 600; color: #A87352;">2. Lawyer Android App Dashboard</span></h2>
+<ul>
+<li><span style="color: #232f3e;"><b>Assigned Case Management:</b></span><br>
+Lawyers access a dashboard showing all cases assigned to them, updated in real time.</li>
+<li><span style="color: #232f3e;"><b>Case Details &amp; Progress Reporting:</b></span><br>
+View case specifics, update statuses, submit progress reports, and communicate securely with clients.</li>
+<li><span style="color: #232f3e;"><b>CPD Points &amp; Rewards:</b></span><br>
+Track Continuing Professional Development points earned via pro bono work.</li>
+<li><span style="color: #232f3e;"><b>Real-Time Notifications:</b></span><br>
+Receive alerts about new cases, deadlines, and messages.</li>
+</ul>
+<p><img src="images/lawyer-dashboard.png" alt="Lawyer Dashboard Screenshot"></p>
+<hr>
+<h2><span style="font-weight: 600; color: #A87352;">3. AI-Assisted Case Filtration &amp; Assignment</span></h2>
+<ul>
+<li><span style="color: #232f3e;"><b>Agentic AI Filtration:</b></span><br>
+AI automatically filters and prioritizes cases (civil, criminal, urgency) using NLP and Kenyan legal data.</li>
+<li><span style="color: #232f3e;"><b>TranslatePlus Integration:</b></span><br>
+Kiswahili case descriptions are translated to English, improving classification accuracy.</li>
+<li><span style="color: #232f3e;"><b>Geolocation Matching (LocationIQ):</b></span><br>
+Police station addresses are geocoded, enabling proximity-matching between detainees and lawyers.</li>
+<li><span style="color: #232f3e;"><b>Automated Assignment:</b></span><br>
+Celery + Redis automate lawyer assignment based on specialty, location, and workload, using Haversine formula for distance calculations.</li>
+<li><span style="color: #232f3e;"><b>Equitable Distribution:</b></span><br>
+The system prevents lawyer overload and ensures fair case allocation.</li>
+</ul>
+<hr>
+<h2><span style="font-weight: 600; color: #A87352;">4. LSK Admin Dashboard (Web)</span></h2>
+<ul>
+<li><span style="color: #232f3e;"><b>Oversight &amp; Case Monitoring:</b></span><br>
+LSK administrators view all active cases, assignments, and lawyer activities.</li>
+<li><span style="color: #232f3e;"><b>Reporting &amp; Analytics:</b></span><br>
+Monthly reports, dashboards, and charts show case volumes, resolution times, lawyer performance, and assignment metrics.</li>
+<li><span style="color: #232f3e;"><b>Reward Management:</b></span><br>
+Allocate and manage CPD points for lawyer activities.</li>
+<li><span style="color: #232f3e;"><b>Compliance &amp; Audit Logging:</b></span><br>
+Track all actions for regulatory compliance and transparent governance.</li>
+</ul>
+<p><img src="images/lsk-dashboard.png" alt="Admin Dashboard Screenshot"></p>
+<hr>
+<h2><span style="font-weight: 600; color: #A87352;">5. Secure Authentication, Communication &amp; Data Management</span></h2>
+<ul>
+<li><span style="color: #232f3e;"><b>Role-Based Access Control:</b></span><br>
+Segregated interfaces and permissions for detainees, lawyers, and LSK admins.</li>
+<li><span style="color: #232f3e;"><b>Encrypted Data Storage:</b></span><br>
+All sensitive data (case records, messages, tokens) is encrypted at rest and in transit.</li>
+<li><span style="color: #232f3e;"><b>Audit Trails:</b></span><br>
+Every user action and system event is logged for analytics and compliance.</li>
+</ul>
+<hr>
+<style>
+.api-block {
+  background: #621616;
+  border-radius: 10px;
+  padding: 18px 18px 10px 18px;
+  margin: 18px 0 24px 0;
+  overflow-x: auto;
+  font-size: 1.09em;
+  font-family: 'Fira Mono', 'Consolas', 'monospace';
+}
+.api-dark {
+  background: #621616 !important;
+  color: #fff !important;
+  border-radius: 6px;
+  padding: 12px 14px 8px 14px;
+  margin: 0;
+  font-size: 1em;
+  font-family: 'Fira Mono', 'Consolas', 'monospace';
+}
+</style>

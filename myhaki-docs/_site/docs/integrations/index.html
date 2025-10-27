@@ -1,0 +1,248 @@
+<h1>Integrations</h1>
+<p>Detailed documentation for integrating <strong>MyHaki</strong> with our core APIs and external services—<strong>TranslatePlus, LocationIQ, Agentic AI (Gemini), Celery/Redis, and PostgreSQL/pgvector.</strong><br>
+This guide covers setup, configuration, API usage, troubleshooting, and law-themed best practices.</p>
+<hr>
+<h2><span style="font-weight:600; color:#A87352;">TranslatePlus Integration (Kiswahili → English)</span></h2>
+<p><strong>Overview:</strong><br>
+TranslatePlus enables real-time translation of Kiswahili case descriptions to English, powering AI-driven case classification.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>
+<p><strong>API Key Setup</strong></p>
+<ul>
+<li>Obtain your TranslatePlus API key from the official portal.</li>
+<li>Store securely in <code>.env</code>:<pre><code>TRANSLATEPLUS_API_KEY=your_api_key
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Sample API Call</strong></p>
+<pre><code class="language-python">import requests
+response = requests.post(
+    &quot;https://api.translateplus.com/translate&quot;,
+    headers={&quot;Authorization&quot;: f&quot;Token {TRANSLATEPLUS_API_KEY}&quot;},
+    json={
+        &quot;text&quot;: &quot;Kukamatwa wakati wa maandamano&quot;,
+        &quot;source&quot;: &quot;sw&quot;,
+        &quot;target&quot;: &quot;en&quot;
+    }
+)
+print(response.json()) 
+</code></pre>
+</li>
+<li>
+<p><strong>API Endpoint (Backend):</strong></p>
+<pre class="api-dark">POST /ai/translate/</pre>
+</li>
+<li>
+<p><strong>Troubleshooting:</strong></p>
+<ul>
+<li><strong>401 Unauthorized:</strong> Check API key validity.</li>
+<li><strong>Slow response:</strong> Use glossary uploads for legal terms.</li>
+</ul>
+</li>
+<li>
+<p><strong>Best Practices:</strong></p>
+<ul>
+<li>Never log API keys.</li>
+<li>Validate all input/output for legal compliance.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2><span style="font-weight:600; color:#A87352;">LocationIQ Integration (Geocoding)</span></h2>
+<p><strong>Overview:</strong><br>
+Converts police station names into latitude/longitude for proximity-based lawyer assignment.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>
+<p><strong>API Key Setup</strong></p>
+<ul>
+<li>Register at <a href="https://locationiq.com/">LocationIQ</a> and obtain your API key.</li>
+<li>Store securely in <code>.env</code>:<pre><code>LOCATIONIQ_API_KEY=your_api_key
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Sample API Call</strong></p>
+<pre><code class="language-python">import requests
+response = requests.get(
+    &quot;https://us1.locationiq.com/v1/search.php&quot;,
+    params={
+        &quot;key&quot;: LOCATIONIQ_API_KEY,
+        &quot;q&quot;: &quot;Kisumu Police Station&quot;,
+        &quot;format&quot;: &quot;json&quot;
+    }
+)
+coords = response.json()[0]
+print(coords)  # {'lat': '-0.0894', 'lon': '34.7594', ...}
+</code></pre>
+</li>
+<li>
+<p><strong>API Endpoint (Backend):</strong></p>
+<pre class="api-dark">GET /location/geocode/</pre>
+</li>
+<li>
+<p><strong>Troubleshooting:</strong></p>
+<ul>
+<li><strong>Empty results:</strong> Check spelling/format of station names.</li>
+<li><strong>Rate limit:</strong> Monitor usage and set alerts.</li>
+</ul>
+</li>
+<li>
+<p><strong>Best Practices:</strong></p>
+<ul>
+<li>Use Haversine formula for accurate distance calculations.</li>
+<li>Store coordinates in PostgreSQL for analytics.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2><span style="font-weight:600; color:#A87352;">Agentic AI Integration (Gemini Reasoning Engine)</span></h2>
+<p><strong>Overview:</strong><br>
+Uses Google Gemini (Agentic AI) to classify cases, prioritize urgency, and match lawyers to detainees.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>
+<p><strong>API Key Setup</strong></p>
+<ul>
+<li>Enable Gemini API in your Google AI account.</li>
+<li>Store key securely in <code>.env</code>:<pre><code>GEMINI_API_KEY=your_api_key
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Sample API Call</strong></p>
+<pre><code class="language-python">import requests
+headers = {&quot;Authorization&quot;: f&quot;Token {GEMINI_API_KEY}&quot;}
+data = {
+    &quot;case_description&quot;: &quot;Arrested during protest&quot;,
+    &quot;trial_date&quot;: &quot;2025-10-02&quot;,
+    &quot;location&quot;: &quot;Nairobi&quot;
+}
+response = requests.post(&quot;https://gemini.googleapis.com/v1/classify&quot;, json=data, headers=headers)
+print(response.json())  # {'category': 'criminal', 'priority': 'high'}
+</code></pre>
+</li>
+<li>
+<p><strong>API Endpoint (Backend):</strong></p>
+<pre class="api-dark">POST /ai/classify-case/</pre>
+</li>
+<li>
+<p><strong>Best Practices:</strong></p>
+<ul>
+<li>Anonymize sensitive data before sending.</li>
+<li>Log AI decisions for audit and fairness.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2><span style="font-weight:600; color:#A87352;">Celery + Redis (Automated Assignment)</span></h2>
+<p><strong>Overview:</strong><br>
+Automates assignment of cases to lawyers based on location, availability, and expertise.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>
+<p><strong>Setup</strong></p>
+<ul>
+<li>Install Celery and Redis in your backend environment.</li>
+<li>Configure Celery worker for Django:<pre><code class="language-python"># settings.py
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Sample Task</strong></p>
+<pre><code class="language-python">from myhaki.tasks import assign_case_to_lawyer
+assign_case_to_lawyer.delay(case_id=123)
+</code></pre>
+</li>
+<li>
+<p><strong>API Endpoint:</strong></p>
+<pre class="api-dark">POST /case-assignments/</pre>
+</li>
+<li>
+<p><strong>Best Practices:</strong></p>
+<ul>
+<li>Monitor assignment queue for overload.</li>
+<li>Log assignment decisions for transparency.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2><span style="font-weight:600; color:#A87352;">PostgreSQL + pgvector (Embeddings &amp; Data Storage)</span></h2>
+<p><strong>Overview:</strong><br>
+Stores case, lawyer, and embedding data for semantic search and analytics.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li>
+<p><strong>Setup</strong></p>
+<ul>
+<li>Ensure PostgreSQL 14+ with pgvector extension installed.</li>
+<li>Migrate Django models for embedding storage.</li>
+</ul>
+</li>
+<li>
+<p><strong>Sample Storage</strong></p>
+<pre><code class="language-python">from pgvector.django import VectorField
+class CaseEmbedding(models.Model):
+    embedding_vector = VectorField(dimensions=768)
+    case = models.ForeignKey(Case, on_delete=models.CASCADE)
+</code></pre>
+</li>
+<li>
+<p><strong>Best Practices:</strong></p>
+<ul>
+<li>Index embeddings for efficient search.</li>
+<li>Regularly backup database for compliance.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2><span style="font-weight:600; color:#A87352;">General Troubleshooting &amp; Lawful Practices</span></h2>
+<ul>
+<li>Use <code>.env</code> for all secrets and credentials.</li>
+<li>Never expose API keys or sensitive tokens.</li>
+<li>Encrypt all data in transit and at rest.</li>
+<li>Log all integration actions for audit.</li>
+<li>Monitor API usage to prevent abuse.</li>
+<li>Validate all external data for compliance with Kenya’s Data Protection Act.</li>
+<li>Test integrations in sandbox before production.</li>
+</ul>
+<hr>
+<h2><span style="font-weight:600; color:#A87352;">References &amp; Further Reading</span></h2>
+<ul>
+<li><a href="https://www.translateplus.com/">TranslatePlus API Docs</a></li>
+<li><a href="https://locationiq.com/docs">LocationIQ API</a></li>
+<li><a href="https://ai.google.dev/gemini">Gemini (Google AI) Docs</a></li>
+<li><a href="https://docs.celeryproject.org/en/stable/">Celery &amp; Redis Docs</a></li>
+<li><a href="https://github.com/pgvector/pgvector">pgvector for PostgreSQL</a></li>
+<li><a href="api-reference.md">MyHaki API Reference</a></li>
+</ul>
+<hr>
+<style>
+.api-block {
+  background: #A87352;
+  border-radius: 10px;
+  padding: 18px 18px 10px 18px;
+  margin: 18px 0 24px 0;
+  overflow-x: auto;
+  font-size: 1.09em;
+  font-family: 'Fira Mono', 'Consolas', 'monospace';
+  color: #fff;
+}
+.api-dark {
+  background: #621616 !important;
+  color: #fff !important;
+  border-radius: 6px;
+  padding: 12px 14px 8px 14px;
+  margin: 0;
+  font-size: 1em;
+  font-family: 'Fira Mono', 'Consolas', 'monospace';
+}
+</style>
