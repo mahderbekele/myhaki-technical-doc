@@ -1,1 +1,6 @@
 mkdocs
+click>=7.0
+ghp-import>=1.0
+jinja2>=2.11.1
+markdown>=3.3.6
+markupsafe>=2.0.1
