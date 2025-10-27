@@ -31,7 +31,7 @@ theme:
     - search.highlight
     - search.suggest
     - search.share
-  # custom_dir: docs/styles
+
 
 extra_css:
   - styles/extra.css
