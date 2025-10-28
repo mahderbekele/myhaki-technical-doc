@@ -1,4 +1,4 @@
 [build]
+base = "myhaki-docs"
 command = "mkdocs build"
-publish = "site"
-environment = { PYTHON_VERSION = "3.9" }
+publish = "myhaki-docs/site"
