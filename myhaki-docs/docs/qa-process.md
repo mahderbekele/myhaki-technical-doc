@@ -85,7 +85,7 @@ MyHaki is committed to **reliable, secure, and accessible legal technology**. Ou
 - [Swagger/OpenAPI Live API Docs](https://myhaki-3e53581dd62e.herokuapp.com/redoc/)
 - [Postman Collection](https://documenter.getpostman.com/view/45699975/2sB3HqHJX4)
 - [ClickUp QA Board](https://app.clickup.com/) (internal)
-- [MyHaki Product Documentation](MyHaki-PRD.pdf)
+- [MyHaki Product Documentation](myHaki-PRD.pdf)
 
 ---
 
